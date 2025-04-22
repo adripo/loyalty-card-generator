@@ -112,8 +112,11 @@
 
 .image-warning .bi {
     font-size: 1.2rem;
-    color: #ffc107;
+    color: #dc3545; /* Change to error red */
     cursor: help;
+    background-color: rgba(255,255,255,0.7);
+    border-radius: 50%;
+    padding: 3px;
 }
 
 .image-warning .tooltip-content {
