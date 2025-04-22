@@ -68,44 +68,44 @@ function downloadAllCards() {
                     });
             } else {
                 // For static images, create PNG
-            const canvas = document.createElement('canvas');
-            canvas.width = cardWidth;
-            canvas.height = cardHeight;
-            const ctx = canvas.getContext('2d');
-            
-            // Draw background
-            ctx.fillStyle = card.backgroundColor;
-            ctx.fillRect(0, 0, cardWidth, cardHeight);
-            
-            // Load the logo image
-            const logoImg = new Image();
-            logoImg.onload = function() {
+                const canvas = document.createElement('canvas');
+                canvas.width = cardWidth;
+                canvas.height = cardHeight;
+                const ctx = canvas.getContext('2d');
+                
+                // Draw background
+                ctx.fillStyle = card.backgroundColor;
+                ctx.fillRect(0, 0, cardWidth, cardHeight);
+                
+                // Load the logo image
+                const logoImg = new Image();
+                logoImg.onload = function() {
                     // Process and draw logo, removing transparent borders
                     processAndDrawLogo(ctx, logoImg, cardWidth, cardHeight, logoSize);
-                
-                // Convert canvas to blob
-                canvas.toBlob(blob => {
-                    // Generate a filename with prefix
-                        const basename = card.filename ? card.filename.split('.')[0] + '.png' : `card_${index + 1}.png`;
-                    const filename = `${prefix}${basename}`;
                     
-                    // Add to zip
-                    zip.file(filename, blob);
-                    resolve();
-                }, 'image/png');
-            };
-            
-            logoImg.onerror = function() {
-                console.error('Error loading logo image');
-                // Still resolve, but with a simple colored card
-                canvas.toBlob(blob => {
-                    const filename = `${prefix}card_${index + 1}.png`;
-                    zip.file(filename, blob);
-                    resolve();
-                }, 'image/png');
-            };
-            
-            logoImg.src = card.logo;
+                    // Convert canvas to blob
+                    canvas.toBlob(blob => {
+                        // Generate a filename with prefix
+                        const basename = card.filename ? card.filename.split('.')[0] + '.png' : `card_${index + 1}.png`;
+                        const filename = `${prefix}${basename}`;
+                        
+                        // Add to zip
+                        zip.file(filename, blob);
+                        resolve();
+                    }, 'image/png');
+                };
+                
+                logoImg.onerror = function() {
+                    console.error('Error loading logo image');
+                    // Still resolve, but with a simple colored card
+                    canvas.toBlob(blob => {
+                        const filename = `${prefix}card_${index + 1}.png`;
+                        zip.file(filename, blob);
+                        resolve();
+                    }, 'image/png');
+                };
+                
+                logoImg.src = card.logo;
             }
         });
         

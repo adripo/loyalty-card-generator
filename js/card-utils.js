@@ -207,3 +207,85 @@ function drawLogoOnCanvas(ctx, logoImg, cardWidth, cardHeight, logoSize) {
     const y = (cardHeight - logoHeight) / 2;
     ctx.drawImage(logoImg, x, y, logoWidth, logoHeight);
 }
+
+// Function to process and draw the logo on canvas, removing transparent borders
+function processAndDrawLogo(ctx, logoImg, cardWidth, cardHeight, logoSize) {
+    // Create a temporary canvas to analyze the image
+    const tempCanvas = document.createElement('canvas');
+    tempCanvas.width = logoImg.width;
+    tempCanvas.height = logoImg.height;
+    const tempCtx = tempCanvas.getContext('2d');
+    
+    // Draw the image to the temporary canvas
+    tempCtx.drawImage(logoImg, 0, 0);
+    
+    // Get image data to analyze transparent borders
+    const imageData = tempCtx.getImageData(0, 0, tempCanvas.width, tempCanvas.height);
+    const data = imageData.data;
+    
+    // Find the bounds of non-transparent pixels
+    let minX = tempCanvas.width;
+    let minY = tempCanvas.height;
+    let maxX = 0;
+    let maxY = 0;
+    
+    // Scan the image data to find non-transparent pixels
+    for (let y = 0; y < tempCanvas.height; y++) {
+        for (let x = 0; x < tempCanvas.width; x++) {
+            const alpha = data[((y * tempCanvas.width) + x) * 4 + 3];
+            if (alpha > 0) { // If not fully transparent
+                minX = Math.min(minX, x);
+                minY = Math.min(minY, y);
+                maxX = Math.max(maxX, x);
+                maxY = Math.max(maxY, y);
+            }
+        }
+    }
+    
+    // Check if we found any non-transparent pixels
+    if (minX <= maxX && minY <= maxY) {
+        // Calculate the trimmed dimensions
+        const trimmedWidth = maxX - minX + 1;
+        const trimmedHeight = maxY - minY + 1;
+        
+        // Create another canvas for the trimmed image
+        const trimmedCanvas = document.createElement('canvas');
+        trimmedCanvas.width = trimmedWidth;
+        trimmedCanvas.height = trimmedHeight;
+        const trimmedCtx = trimmedCanvas.getContext('2d');
+        
+        // Draw the trimmed image
+        trimmedCtx.drawImage(
+            logoImg,
+            minX, minY, trimmedWidth, trimmedHeight,
+            0, 0, trimmedWidth, trimmedHeight
+        );
+        
+        // Now draw this trimmed image to the output canvas
+        // Calculate dimensions to maintain aspect ratio with margins
+        const margin = cardWidth * (100 - logoSize) / 200; // Calculate margin based on logo size
+        const maxWidth = cardWidth - (margin * 2);
+        const maxHeight = cardHeight - (margin * 2);
+        
+        let logoWidth = trimmedWidth;
+        let logoHeight = trimmedHeight;
+        
+        // Scale down if the logo is too large
+        if (logoWidth > maxWidth || logoHeight > maxHeight) {
+            const widthRatio = maxWidth / logoWidth;
+            const heightRatio = maxHeight / logoHeight;
+            const scaleRatio = Math.min(widthRatio, heightRatio);
+            
+            logoWidth *= scaleRatio;
+            logoHeight *= scaleRatio;
+        }
+        
+        // Draw the logo centered on the card
+        const x = (cardWidth - logoWidth) / 2;
+        const y = (cardHeight - logoHeight) / 2;
+        ctx.drawImage(trimmedCanvas, x, y, logoWidth, logoHeight);
+    } else {
+        // Fallback to original drawing if no non-transparent pixels found
+        drawLogoOnCanvas(ctx, logoImg, cardWidth, cardHeight, logoSize);
+    }
+}
