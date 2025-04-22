@@ -5,8 +5,8 @@ A web-based tool that generates loyalty cards from your logos. Upload images to 
 ## Features
 
 - **Upload Multiple Logos**: Drag & drop or select files to upload
-- **Credit Card Format**: All cards use the standard credit card aspect ratio (1.585:1)
-- **Custom Width**: Set any width between 100-2000px
+- **Credit Card Format**: All cards use the standard credit card aspect ratio (`1.585:1`)
+- **Custom Width**: Set any width between `100`-`2000`px
 - **Customizable Backgrounds**: Choose from presets or pick your own color
 - **Theme Support**: Light, dark, and system themes
 - **Batch Download**: Download all cards as a ZIP file
