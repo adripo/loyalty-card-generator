@@ -127,6 +127,9 @@ function renderCards() {
                     <button class="btn btn-sm btn-secondary random-color" data-index="${index}">
                         <i class="bi bi-shuffle"></i> Random
                     </button>
+                    <button class="btn btn-sm btn-success download-card" data-index="${index}">
+                        <i class="bi bi-download"></i> Download
+                    </button>
                     <button class="btn btn-sm btn-danger remove-card" data-index="${index}">
                         <i class="bi bi-trash"></i> Remove
                     </button>
