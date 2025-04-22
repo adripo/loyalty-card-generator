@@ -130,6 +130,91 @@ function downloadAllCards() {
     });
 }
 
+
+// Function to download a single card
+function downloadSingleCard(index) {
+    if (index < 0 || index >= cards.length) return;
+    
+    const card = cards[index];
+    const prefix = $('#filename-prefix').val() || 'loyalty_';
+    
+    // Show loading indicator on the button
+    const $downloadBtn = $(`.download-card[data-index="${index}"]`);
+    const originalText = $downloadBtn.html();
+    $downloadBtn.html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>');
+    $downloadBtn.prop('disabled', true);
+    
+    // Determine if this is an animated format (should not be converted to PNG)
+    const isAnimated = ['image/gif', 'image/apng', 'image/webp'].some(type => 
+        card.logo.startsWith(`data:${type}`));
+    
+    // Create a canvas to draw the card
+    const canvas = document.createElement('canvas');
+    canvas.width = cardWidth;
+    canvas.height = cardHeight;
+    const ctx = canvas.getContext('2d');
+    
+    // Draw background
+    ctx.fillStyle = card.backgroundColor;
+    ctx.fillRect(0, 0, cardWidth, cardHeight);
+    
+    // Load the logo image
+    const logoImg = new Image();
+    logoImg.onload = function() {
+        // If animated format, use the original image
+        if (isAnimated) {
+            // Create an anchor element for download
+            const link = document.createElement('a');
+            link.href = card.logo;
+            link.download = `${prefix}${card.filename || `card_${index + 1}.gif`}`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            // Restore button state
+            $downloadBtn.html(originalText);
+            $downloadBtn.prop('disabled', false);
+        } else {
+            // For static images, process and trim transparent borders
+            processAndDrawLogo(ctx, logoImg, cardWidth, cardHeight, logoSize);
+            
+            // Convert canvas to blob
+            canvas.toBlob(blob => {
+                // Generate a filename with prefix
+                const basename = card.filename || `card_${index + 1}`;
+                let filename = `${prefix}${basename}`;
+                
+                // Ensure it has .png extension for static images
+                if (!filename.toLowerCase().endsWith('.png')) {
+                    filename = filename.split('.')[0] + '.png';
+                }
+                
+                // Create download link
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = filename;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(link.href);
+                
+                // Restore button state
+                $downloadBtn.html(originalText);
+                $downloadBtn.prop('disabled', false);
+            }, 'image/png');
+        }
+    };
+    
+    logoImg.onerror = function() {
+        console.error('Error loading logo image');
+        $downloadBtn.html(originalText);
+        $downloadBtn.prop('disabled', false);
+        alert('Error loading image for download');
+    };
+    
+    logoImg.src = card.logo;
+}
+
 // Setup drag and drop functionality
 function setupDragAndDrop() {
     const dropArea = document.getElementById('drop-area');

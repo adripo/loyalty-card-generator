@@ -165,6 +165,12 @@ function attachControlListeners() {
         $cardItem.find('.color-picker').val(newColor);
     });
     
+    // Download single card button
+    $('.download-card').on('click', function() {
+        const index = $(this).data('index');
+        downloadSingleCard(index);
+    });
+    
     // Remove card button
     $('.remove-card').on('click', function() {
         const index = $(this).data('index');
