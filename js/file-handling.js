@@ -49,7 +49,25 @@ function downloadAllCards() {
     // Process each card
     cards.forEach((card, index) => {
         const cardPromise = new Promise((resolve) => {
-            // Create a canvas to draw the card
+            // Determine if this is an animated format (should not be converted to PNG)
+            const isAnimated = ['image/gif', 'image/apng', 'image/webp'].some(type => 
+                card.logo.startsWith(`data:${type}`));
+            
+            if (isAnimated) {
+                // For animated formats, use original image data
+                fetch(card.logo)
+                    .then(res => res.blob())
+                    .then(blob => {
+                        const basename = card.filename || `card_${index + 1}`;
+                        zip.file(basename, blob);
+                        resolve();
+                    })
+                    .catch(err => {
+                        console.error('Error fetching animated image:', err);
+                        resolve(); // Resolve anyway to continue with other cards
+                    });
+            } else {
+                // For static images, create PNG
             const canvas = document.createElement('canvas');
             canvas.width = cardWidth;
             canvas.height = cardHeight;
@@ -62,13 +80,13 @@ function downloadAllCards() {
             // Load the logo image
             const logoImg = new Image();
             logoImg.onload = function() {
-                // Draw logo on canvas the same way as in preview
-                drawLogoOnCanvas(ctx, logoImg, cardWidth, cardHeight, logoSize);
+                    // Process and draw logo, removing transparent borders
+                    processAndDrawLogo(ctx, logoImg, cardWidth, cardHeight, logoSize);
                 
                 // Convert canvas to blob
                 canvas.toBlob(blob => {
                     // Generate a filename with prefix
-                    const basename = card.filename || `card_${index + 1}`;
+                        const basename = card.filename ? card.filename.split('.')[0] + '.png' : `card_${index + 1}.png`;
                     const filename = `${prefix}${basename}`;
                     
                     // Add to zip
@@ -88,6 +106,7 @@ function downloadAllCards() {
             };
             
             logoImg.src = card.logo;
+            }
         });
         
         promises.push(cardPromise);
