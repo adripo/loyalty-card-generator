@@ -43,14 +43,16 @@ $(document).ready(function() {
     $('#logo-size').on('input', updateLogoSize);
     
     // Color preset click
-    $('.color-preset').on('click', function() {
-        if ($(this).data('action') === 'random') {
-            applyColorToAll('random');
-        } else {
-            const color = $(this).data('color');
-            applyColorToAll('color', color);
-        }
-    });
+$('.color-preset').on('click', function() {
+    if ($(this).data('action') === 'random') {
+        applyColorToAll('random');
+    } else if ($(this).data('action') === 'custom') {
+        applyColorToAll('custom');
+    } else {
+        const color = $(this).data('color');
+        applyColorToAll('color', color);
+    }
+});
     
     // Download all button
     $('#download-all').on('click', downloadAllCards);

@@ -26,14 +26,31 @@ function generatePastelColor() {
 function applyColorToAll(action, color) {
     if (cards.length === 0) return;
     
-    cards.forEach(card => {
-        if (action === 'random') {
-            card.backgroundColor = generatePastelColor();
-        } else {
-            card.backgroundColor = color;
-        }
-    });
-    
-    // Re-render to update UI
-    renderCards();
+    if (action === 'custom') {
+        // Create a temporary color input
+        const input = document.createElement('input');
+        input.type = 'color';
+        
+        // When color is selected, apply to all cards
+        input.addEventListener('change', function() {
+            cards.forEach(card => {
+                card.backgroundColor = this.value;
+            });
+            renderCards();
+        });
+        
+        // Trigger click to open color picker
+        input.click();
+    } else {
+        cards.forEach(card => {
+            if (action === 'random') {
+                card.backgroundColor = generatePastelColor();
+            } else {
+                card.backgroundColor = color;
+            }
+        });
+        
+        // Re-render to update UI
+        renderCards();
+    }
 }
