@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html lang="en" data-bs-theme="auto">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Loyalty Card Generator</title>
-    
+
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
@@ -12,6 +13,7 @@
     <!-- Custom CSS -->
     <link rel="stylesheet" href="css/styles.css">
 </head>
+
 <body>
     <div class="container mt-5 mb-5">
         <div class="d-flex align-items-center justify-content-between mb-4">
@@ -21,17 +23,18 @@
                     <div class="btn-group" role="group">
                         <input type="radio" class="btn-check" name="theme" id="theme-light" value="light">
                         <label class="btn btn-outline-primary" for="theme-light"><i class="bi bi-sun"></i></label>
-                        
+
                         <input type="radio" class="btn-check" name="theme" id="theme-dark" value="dark">
                         <label class="btn btn-outline-primary" for="theme-dark"><i class="bi bi-moon"></i></label>
-                        
+
                         <input type="radio" class="btn-check" name="theme" id="theme-auto" value="auto" checked>
-                        <label class="btn btn-outline-primary" for="theme-auto"><i class="bi bi-circle-half"></i></label>
+                        <label class="btn btn-outline-primary" for="theme-auto"><i
+                                class="bi bi-circle-half"></i></label>
                     </div>
                 </div>
             </div>
         </div>
-        
+
         <div class="row mb-4">
             <div class="col-md-6">
                 <div class="card h-100">
@@ -71,12 +74,12 @@
                     </div>
                 </div>
             </div>
-            
+
             <div class="col-md-6">
                 <div class="card h-100">
                     <div class="card-body">
                         <h5 class="card-title">Card Settings</h5>
-                        
+
                         <!-- Card Dimensions -->
                         <div class="mb-3">
                             <label for="card-width" class="form-label">Card Width (px)</label>
@@ -84,16 +87,17 @@
                                 <input type="number" class="form-control" id="card-width" value="512">
                                 <span class="input-group-text">px</span>
                             </div>
-                            <div class="form-text">Output: <span id="dimensions-display">512 × 323 px</span> (credit card ratio)</div>
+                            <div class="form-text">Output: <span id="dimensions-display">512 × 323 px</span> (credit
+                                card ratio)</div>
                         </div>
-                        
+
                         <!-- Filename Prefix -->
                         <div class="mb-3">
                             <label for="filename-prefix" class="form-label">Filename Prefix</label>
                             <input type="text" class="form-control" id="filename-prefix" value="loyalty_">
                             <div class="form-text">Added before each filename when downloading</div>
                         </div>
-                        
+
                         <!-- Logo Positioning -->
                         <div class="mb-3">
                             <label class="form-label">Logo Size</label>
@@ -103,7 +107,7 @@
                             </div>
                             <div class="form-text">Controls the maximum size of the logo relative to the card</div>
                         </div>
-                        
+
                         <!-- Color Presets -->
                         <div class="mb-3">
                             <label class="form-label">Background Color Presets</label>
@@ -133,7 +137,7 @@
                             </div>
                             <div class="form-text">Click to apply to all cards</div>
                         </div>
-                        
+
                         <!-- Action Buttons -->
                         <div class="d-flex gap-2">
                             <button id="download-all" class="btn btn-success">
@@ -147,12 +151,12 @@
                 </div>
             </div>
         </div>
-        
+
         <div class="d-flex align-items-center mb-3">
             <h4 class="mb-0">Your Cards</h4>
             <span class="badge counter-badge ms-2" id="card-counter">0</span>
         </div>
-        
+
         <div id="cards-container" class="row">
             <div id="empty-state" class="empty-state">
                 <i class="bi bi-card-image fs-1 mb-3"></i>
@@ -160,13 +164,13 @@
             </div>
         </div>
     </div>
-    
+
     <!-- Required Libraries -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.7.1/jszip.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
-    
+
     <!-- Custom JS -->
     <script src="js/theme.js"></script>
     <script src="js/color-utils.js"></script>
@@ -174,4 +178,5 @@
     <script src="js/file-handling.js"></script>
     <script src="js/app.js"></script>
 </body>
+
 </html>

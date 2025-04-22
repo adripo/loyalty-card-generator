@@ -1,9 +1,9 @@
 :root {
-    --card-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    --card-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 [data-bs-theme="dark"] {
-    --card-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    --card-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
 }
 
 #drop-area {
@@ -112,9 +112,9 @@
 
 .image-warning .bi {
     font-size: 1.2rem;
-    color: #dc3545; /* Change to error red */
+    color: #dc3545;
     cursor: help;
-    background-color: rgba(255,255,255,0.7);
+    background-color: rgba(255, 255, 255, 0.7);
     border-radius: 50%;
     padding: 3px;
 }
@@ -174,7 +174,7 @@
     width: 30px;
     height: 30px;
     border-radius: 50%;
-    border: 1px solid rgba(0,0,0,0.1);
+    border: 1px solid rgba(0, 0, 0, 0.1);
     cursor: pointer;
 }
 
@@ -195,7 +195,7 @@
 }
 
 [data-bs-theme="dark"] .color-preset {
-    border-color: rgba(255,255,255,0.2);
+    border-color: rgba(255, 255, 255, 0.2);
 }
 
 .color-preset:hover {

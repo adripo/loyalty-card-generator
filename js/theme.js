@@ -21,10 +21,10 @@ function initTheme() {
 
 // Theme switch listeners
 function setupThemeListeners() {
-    $('input[name="theme"]').on('change', function() {
+    $('input[name="theme"]').on('change', function () {
         setTheme($(this).val());
     });
-    
+
     // Listen for system theme changes
     window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
         if (localStorage.getItem('preferredTheme') === 'auto') {

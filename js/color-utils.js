@@ -25,20 +25,20 @@ function generatePastelColor() {
 // Function to apply color or random colors to all cards
 function applyColorToAll(action, color) {
     if (cards.length === 0) return;
-    
+
     if (action === 'custom') {
         // Create a temporary color input
         const input = document.createElement('input');
         input.type = 'color';
-        
+
         // When color is selected, apply to all cards
-        input.addEventListener('change', function() {
+        input.addEventListener('change', function () {
             cards.forEach(card => {
                 card.backgroundColor = this.value;
             });
             renderCards();
         });
-        
+
         // Trigger click to open color picker
         input.click();
     } else {
@@ -49,7 +49,7 @@ function applyColorToAll(action, color) {
                 card.backgroundColor = color;
             }
         });
-        
+
         // Re-render to update UI
         renderCards();
     }
