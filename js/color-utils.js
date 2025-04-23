@@ -27,19 +27,26 @@ function applyColorToAll(action, color) {
     if (cards.length === 0) return;
 
     if (action === 'custom') {
-        // Create a temporary color input
-        const input = document.createElement('input');
-        input.type = 'color';
+        // Create a color picker input for the custom color
+        const inputId = 'global-color-picker';
+        let input = document.getElementById(inputId);
 
-        // When color is selected, apply to all cards
-        input.addEventListener('change', function () {
-            cards.forEach(card => {
-                card.backgroundColor = this.value;
+        if (!input) {
+            input = document.createElement('input');
+            input.type = 'color';
+            input.id = inputId;
+            input.style.position = 'absolute';
+            input.style.visibility = 'hidden';
+            document.body.appendChild(input);
+
+            input.addEventListener('change', function () {
+                cards.forEach(card => {
+                    card.backgroundColor = this.value;
+                });
+                renderCards();
             });
-            renderCards();
-        });
+        }
 
-        // Trigger click to open color picker
         input.click();
     } else {
         cards.forEach(card => {

@@ -40,12 +40,13 @@
                 <div class="card h-100">
                     <div class="card-body d-flex flex-column">
                         <h5 class="card-title">Upload Logos</h5>
-                        <div id="drop-area" class="p-4 border rounded text-center flex-grow-1">
-                            <p>Drag & drop logo images here or</p>
+                        <div id="drop-area"
+                            class="p-4 border rounded text-center flex-grow-1 d-flex flex-column justify-content-center">
+                            <p class="mb-3">Drag & drop logo images here or</p>
                             <input type="file" id="file-input" multiple accept="image/*" class="d-none">
-                            <button id="file-button" class="btn btn-primary">Select Files</button>
+                            <button id="file-button" class="btn btn-primary col-md-3 mx-auto">Select Files</button>
 
-                            <div class="file-types mt-3">
+                            <div class="file-types mt-4">
                                 <div class="file-type-icon">
                                     <i class="bi bi-filetype-png"></i>
                                     <span>PNG</span>
@@ -66,9 +67,17 @@
                                     <i class="bi bi-filetype-gif"></i>
                                     <span>GIF</span>
                                 </div>
+                                <div class="file-type-icon file-type-more">
+                                    <i class="bi bi-three-dots"></i>
+                                    <span>More</span>
+                                    <div class="tooltip-content">
+                                        Also supports: APNG, AVIF, BMP, ICO and other image formats
+                                    </div>
+                                </div>
                             </div>
-                            <div class="mt-2 small text-muted">
-                                Animated formats (GIF, APNG, WEBP) will preserve animation
+
+                            <div class="mt-3 small text-muted">
+                                Note: All images will be processed as static PNG files
                             </div>
                         </div>
                     </div>
@@ -84,7 +93,8 @@
                         <div class="mb-3">
                             <label for="card-width" class="form-label">Card Width (px)</label>
                             <div class="input-group">
-                                <input type="number" class="form-control" id="card-width" value="512">
+                                <input type="number" class="form-control" id="card-width" value="512" min="100"
+                                    max="2000">
                                 <span class="input-group-text">px</span>
                             </div>
                             <div class="form-text">Output: <span id="dimensions-display">512 × 323 px</span> (credit
@@ -98,24 +108,35 @@
                             <div class="form-text">Added before each filename when downloading</div>
                         </div>
 
-                        <!-- Logo Positioning -->
+                        <!-- Global Logo Size -->
                         <div class="mb-3">
-                            <label class="form-label">Logo Size</label>
-                            <div class="d-flex align-items-center">
-                                <input type="range" class="form-range" id="logo-size" min="50" max="100" value="90">
-                                <span class="ms-3" id="logo-size-display">90%</span>
+                            <div class="slider-container">
+                                <div class="slider-header">
+                                    <label for="logo-size" class="form-label mb-0">Logo Size</label>
+                                    <span class="slider-value" id="logo-size-display">90%</span>
+                                </div>
+                                <input type="range" class="form-range" id="logo-size" min="50" max="100" step="10"
+                                    value="90">
+                                <ul class="slider-ticks">
+                                    <li class="slider-tick"><span class="slider-tick-label">50</span></li>
+                                    <li class="slider-tick"></li>
+                                    <li class="slider-tick"><span class="slider-tick-label">70</span></li>
+                                    <li class="slider-tick"></li>
+                                    <li class="slider-tick"><span class="slider-tick-label">90</span></li>
+                                    <li class="slider-tick"><span class="slider-tick-label">100</span></li>
+                                </ul>
+                                <div class="form-text">Default logo size relative to the card</div>
                             </div>
-                            <div class="form-text">Controls the maximum size of the logo relative to the card</div>
                         </div>
 
                         <!-- Color Presets -->
                         <div class="mb-3">
                             <label class="form-label">Background Color Presets</label>
-                            <div class="color-preset-container">
+                            <div class="d-flex flex-wrap gap-2">
                                 <button class="color-preset random-preset" data-action="random"
                                     title="Random colors for each card"><i class="bi bi-shuffle"></i></button>
-                                <button class="color-preset custom-color-preset" data-action="custom"
-                                    title="Choose custom color"></button>
+                                <button class="color-preset custom-color-preset" id="custom-color-button"
+                                    data-action="custom" title="Choose custom color"></button>
                                 <button class="color-preset" style="background-color: #ffffff;" data-color="#ffffff"
                                     title="White"></button>
                                 <button class="color-preset" style="background-color: #f8f9fa;" data-color="#f8f9fa"
@@ -132,14 +153,14 @@
                                     title="Light Yellow"></button>
                                 <button class="color-preset" style="background-color: #e2d9f3;" data-color="#e2d9f3"
                                     title="Light Purple"></button>
-                                <button class="color-preset" style="background-color: #ebf5f5;" data-color="#ebf5f5"
-                                    title="Light Teal"></button>
+                                <button class="color-preset" style="background-color: #f7d6e6;" data-color="#f7d6e6"
+                                    title="Light Pink"></button>
                             </div>
                             <div class="form-text">Click to apply to all cards</div>
                         </div>
 
                         <!-- Action Buttons -->
-                        <div class="d-flex gap-2">
+                        <div class="d-flex gap-2 mt-4">
                             <button id="download-all" class="btn btn-success">
                                 <i class="bi bi-download"></i> Download All Cards
                             </button>

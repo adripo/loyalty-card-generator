@@ -39,8 +39,16 @@ $(document).ready(function () {
         }
     });
 
-    // Logo size change
-    $('#logo-size').on('input', updateLogoSize);
+    // Logo size change - with snap to nearest 10
+    $('#logo-size').on('input', function () {
+        const val = parseInt($(this).val());
+        // Round to nearest 10
+        const roundedVal = Math.round(val / 10) * 10;
+        if (val !== roundedVal) {
+            $(this).val(roundedVal);
+        }
+        updateLogoSize();
+    });
 
     // Color preset click
     $('.color-preset').on('click', function () {

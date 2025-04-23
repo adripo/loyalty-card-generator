@@ -1,3 +1,4 @@
+/* Root variables and theme transitions */
 :root {
     --card-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
@@ -6,16 +7,30 @@
     --card-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
 }
 
+/* Theme transition animation */
+html,
+body {
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.card,
+.btn,
+.form-control,
+.dropdown-menu,
+.loyalty-card,
+.color-preset,
+input,
+select,
+textarea {
+    transition: background-color 0.3s ease, border-color 0.3s ease,
+        color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Drop area styles */
 #drop-area {
-    min-height: 150px;
-    height: 100%;
     border: 2px dashed #ccc;
     border-radius: 8px;
-    transition: background-color 0.3s;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 #drop-area.highlight {
@@ -23,11 +38,13 @@
     border-color: #2196F3;
 }
 
+/* File type icons */
 .file-types {
     display: flex;
-    gap: 10px;
-    margin-top: 15px;
+    flex-wrap: wrap;
     justify-content: center;
+    gap: 15px;
+    margin-top: 15px;
 }
 
 .file-type-icon {
@@ -41,25 +58,15 @@
 .file-type-icon i {
     font-size: 1.5rem;
     margin-bottom: 5px;
+    color: var(--bs-primary);
 }
 
-.card-item {
-    margin-bottom: 30px;
-    position: relative;
-    border: 1px solid var(--bs-border-color);
-    border-radius: 10px;
-    padding: 15px;
-    background-color: var(--bs-card-bg);
-}
-
+/* Card styling */
 .loyalty-card {
-    position: relative;
     width: 100%;
-    max-width: 512px;
     border-radius: 8px;
     overflow: hidden;
     box-shadow: var(--card-shadow);
-    margin-bottom: 1rem;
     transition: all 0.3s ease;
 }
 
@@ -68,120 +75,35 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 20px;
     position: relative;
 }
 
-.loyalty-card img {
-    max-width: 90%;
-    max-height: 90%;
-    object-fit: contain;
-    z-index: 10;
-}
-
-.card-controls {
-    display: flex;
-    gap: 10px;
-    margin-top: 10px;
-    flex-wrap: wrap;
-    align-items: center;
-    padding: 10px;
-    border-top: 1px solid var(--bs-border-color);
-}
-
-.card-header {
-    font-weight: 500;
-    margin-bottom: 10px;
-    color: var(--bs-primary);
-}
-
-.color-picker {
-    width: 40px;
-    height: 40px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-}
-
-.image-warning {
-    position: absolute;
-    bottom: 10px;
-    right: 10px;
-    z-index: 20;
-}
-
-.image-warning .bi {
-    font-size: 1.2rem;
-    color: #dc3545;
-    cursor: help;
-    background-color: rgba(255, 255, 255, 0.7);
-    border-radius: 50%;
-    padding: 3px;
-}
-
-.image-warning .tooltip-content {
-    visibility: hidden;
-    background-color: rgba(0, 0, 0, 0.8);
-    color: #fff;
-    text-align: center;
-    border-radius: 6px;
-    padding: 5px 10px;
-    position: absolute;
-    z-index: 21;
-    bottom: 125%;
-    left: 50%;
-    transform: translateX(-50%);
-    opacity: 0;
-    transition: opacity 0.3s;
-    width: max-content;
-    max-width: 200px;
-    font-size: 12px;
-}
-
-.image-warning:hover .tooltip-content {
-    visibility: visible;
-    opacity: 1;
-}
-
-.theme-switch {
-    margin-left: auto;
-}
-
-.counter-badge {
-    background-color: rgba(var(--bs-primary-rgb), .8);
-    font-size: 0.75rem;
-    position: relative;
-    top: -2px;
-}
-
-#cards-container {
-    min-height: 100px;
-}
-
-.empty-state {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 200px;
-    width: 100%;
-    color: var(--bs-secondary-color);
-    border: 1px dashed var(--bs-border-color);
-    border-radius: 8px;
-}
-
+/* Color preset styles */
 .color-preset {
     width: 30px;
     height: 30px;
     border-radius: 50%;
-    border: 1px solid rgba(0, 0, 0, 0.1);
     cursor: pointer;
+    transition: transform 0.2s;
 }
 
+[data-bs-theme="dark"] .color-preset {
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+[data-bs-theme="light"] .color-preset {
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.color-preset:hover {
+    transform: scale(1.1);
+}
+
+/* Custom color preset */
 .custom-color-preset {
     background: conic-gradient(red, orange, yellow, green, blue, indigo, violet, red);
-    position: relative;
-    overflow: hidden;
+    background-size: 110% 110%;
+    background-position: center;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -194,23 +116,209 @@
     font-weight: bold;
 }
 
-[data-bs-theme="dark"] .color-preset {
-    border-color: rgba(255, 255, 255, 0.2);
-}
-
-.color-preset:hover {
-    transform: scale(1.1);
-}
-
-.color-preset-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-}
-
+/* Random color preset */
 .random-preset {
     display: flex;
     align-items: center;
     justify-content: center;
     background: linear-gradient(135deg, #ff9a9e, #fad0c4, #fad0c4, #a1c4fd);
+}
+
+/* Warning tooltip */
+.image-warning {
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    z-index: 20;
+}
+
+.image-warning-icon {
+    font-size: 0.75rem;
+    color: #fff;
+    background-color: #dc3545;
+    border-radius: 50%;
+    width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.image-warning .tooltip-content {
+    visibility: hidden;
+    position: absolute;
+    bottom: 100%;
+    right: 0;
+    margin-bottom: 5px;
+    background: rgba(33, 37, 41, 0.95);
+    color: #fff;
+    padding: 0.5rem;
+    border-radius: 0.25rem;
+    font-size: 0.75rem;
+    width: max-content;
+    max-width: 200px;
+    opacity: 0;
+    transition: opacity 0.2s;
+    z-index: 1070;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.image-warning:hover .tooltip-content {
+    visibility: visible;
+    opacity: 1;
+}
+
+/* File type more indicator */
+.file-type-more {
+    position: relative;
+    cursor: help;
+}
+
+.file-type-more .tooltip-content {
+    visibility: hidden;
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    margin-bottom: 5px;
+    background: rgba(33, 37, 41, 0.95);
+    color: #fff;
+    padding: 0.5rem;
+    border-radius: 0.25rem;
+    font-size: 0.75rem;
+    width: max-content;
+    max-width: 250px;
+    opacity: 0;
+    transition: opacity 0.2s;
+    z-index: 1070;
+    white-space: nowrap;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.file-type-more:hover .tooltip-content {
+    visibility: visible;
+    opacity: 1;
+}
+
+/* Empty state for no cards */
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 200px;
+    color: var(--bs-secondary-color);
+    border: 1px dashed var(--bs-border-color);
+    border-radius: 8px;
+}
+
+/* Improved slider UI */
+.slider-container {
+    margin-bottom: 1.5rem;
+    position: relative;
+}
+
+.slider-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.slider-value {
+    font-weight: 500;
+    background-color: var(--bs-tertiary-bg);
+    padding: 2px 8px;
+    border-radius: 4px;
+    min-width: 40px;
+    text-align: center;
+}
+
+.slider-ticks {
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    height: 16px;
+    margin-top: -8px;
+    padding: 0;
+    list-style: none;
+}
+
+.slider-tick {
+    position: relative;
+    width: 1px;
+    height: 5px;
+    background-color: var(--bs-secondary-color);
+    opacity: 0.5;
+}
+
+.slider-tick:nth-child(6n+1) {
+    height: 10px;
+    opacity: 0.7;
+}
+
+.slider-tick-label {
+    position: absolute;
+    font-size: 0.65rem;
+    top: 6px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: var(--bs-secondary-color);
+}
+
+/* Card controls */
+.card-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    align-items: center;
+    padding: 0.75rem;
+    border-top: 1px solid var(--bs-border-color);
+}
+
+.color-control-group {
+    display: flex;
+    align-items: center;
+    background-color: var(--bs-tertiary-bg);
+    border-radius: 0.375rem;
+    overflow: hidden;
+    border: 1px solid var(--bs-border-color);
+}
+
+.color-picker {
+    height: 38px;
+    width: 38px;
+    padding: 0;
+    border: none;
+    cursor: pointer;
+    margin: 0;
+    background-color: transparent;
+}
+
+.random-color {
+    border: none;
+    border-left: 1px solid var(--bs-border-color);
+    border-radius: 0;
+    height: 38px;
+    padding: 0 0.75rem;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    margin-left: auto;
+}
+
+.card-action-btn {
+    padding: 0.375rem 0.75rem;
+}
+
+/* Adjust counter badge appearance */
+.counter-badge {
+    font-size: 0.75rem;
+    line-height: 1;
+    vertical-align: middle;
 }

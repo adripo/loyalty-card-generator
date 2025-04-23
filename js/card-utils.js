@@ -28,11 +28,17 @@ function updateCardDimensions() {
 
 // Function to update logo size
 function updateLogoSize() {
-    logoSize = $('#logo-size').val();
+    logoSize = parseInt($('#logo-size').val());
     $('#logo-size-display').text(`${logoSize}%`);
-    $('.loyalty-card img').css({
-        'max-width': `${logoSize}%`,
-        'max-height': `${logoSize}%`
+
+    // Update all cards that don't have individual size set
+    $('.loyalty-card img').each(function (index) {
+        if (!cards[index] || !cards[index].individualLogoSize) {
+            $(this).css({
+                'max-width': `${logoSize}%`,
+                'max-height': `${logoSize}%`
+            });
+        }
     });
 }
 
@@ -65,7 +71,8 @@ function createCard(logoFile) {
                     filename: logoFile.name,
                     width: img.width,
                     height: img.height,
-                    needsScaling: img.width < cardWidth || img.height < cardHeight
+                    needsScaling: img.width < cardWidth || img.height < cardHeight,
+                    individualLogoSize: logoSize // Store individual logo size
                 };
 
                 cards.push(card);
@@ -103,6 +110,12 @@ function renderCards() {
         return;
     }
 
+    // Generate ticks for slider
+    const sliderTicks = Array.from({ length: 6 }, (_, i) => {
+        const value = 50 + (i * 10);
+        return `<li class="slider-tick">${value % 20 === 0 ? `<span class="slider-tick-label">${value}</span>` : ''}</li>`;
+    }).join('');
+
     cards.forEach((card, index) => {
         // Set up warning for scaled images
         const warningElement = card.needsScaling ?
@@ -115,28 +128,63 @@ function renderCards() {
                 </div>
             </div>` : '';
 
+        // Ensure individual logo size is set
+        card.individualLogoSize = card.individualLogoSize || logoSize;
+
         const cardElement = $(`
-            <div class="col-md-4 card-item">
-                <div class="card-header">
-                    Card #${index + 1}: ${card.filename}
-                </div>
-                <div class="loyalty-card">
-                    <div class="loyalty-card-inner" style="background-color: ${card.backgroundColor}">
-                        <img src="${card.logo}" alt="Logo" style="max-width: ${logoSize}%; max-height: ${logoSize}%;">
-                        ${warningElement}
+            <div class="col-md-4 card-item mb-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-header bg-transparent d-flex align-items-center p-2 ps-3">
+                        <div class="text-truncate" title="${card.filename}">${card.filename}</div>
+                        <div class="ms-auto">
+                            <span class="badge bg-secondary">#${index + 1}</span>
+                        </div>
                     </div>
-                </div>
-                <div class="card-controls">
-                    <input type="color" class="color-picker" value="${card.backgroundColor}" data-index="${index}" title="Change background color">
-                    <button class="btn btn-sm btn-secondary random-color" data-index="${index}">
-                        <i class="bi bi-shuffle"></i> Random
-                    </button>
-                    <button class="btn btn-sm btn-success download-card" data-index="${index}">
-                        <i class="bi bi-download"></i> Download
-                    </button>
-                    <button class="btn btn-sm btn-danger remove-card" data-index="${index}">
-                        <i class="bi bi-trash"></i> Remove
-                    </button>
+                    <div class="card-body p-0">
+                        <div class="loyalty-card m-0 w-100">
+                            <div class="loyalty-card-inner" style="background-color: ${card.backgroundColor}">
+                                <img src="${card.logo}" alt="Logo" style="max-width: ${card.individualLogoSize}%; max-height: ${card.individualLogoSize}%;">
+                                ${warningElement}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-controls">
+                        <div class="slider-container w-100">
+                            <div class="slider-header">
+                                <label class="form-label mb-0 small">Logo Size</label>
+                                <span class="slider-value logo-size-display">${card.individualLogoSize}%</span>
+                            </div>
+                            <input type="range" class="form-range card-logo-size" 
+                                   min="50" max="100" step="10" value="${card.individualLogoSize}" 
+                                   data-index="${index}">
+                            <ul class="slider-ticks">
+                                ${sliderTicks}
+                            </ul>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between w-100 align-items-center">
+                            <div class="color-control-group">
+                                <input type="color" class="color-picker" 
+                                       value="${card.backgroundColor}" data-index="${index}" 
+                                       title="Change background color">
+                                <button class="btn btn-sm random-color" data-index="${index}" 
+                                        title="Random color">
+                                    <i class="bi bi-shuffle"></i>
+                                </button>
+                            </div>
+                            
+                            <div class="action-buttons">
+                                <button class="btn btn-sm btn-outline-success card-action-btn download-card" 
+                                        data-index="${index}">
+                                    <i class="bi bi-download"></i> Download
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger card-action-btn remove-card" 
+                                        data-index="${index}">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         `);
@@ -172,6 +220,23 @@ function attachControlListeners() {
         $cardItem.find('.color-picker').val(newColor);
     });
 
+    // Individual logo size slider
+    $('.card-logo-size').on('input', function () {
+        const index = $(this).data('index');
+        const newSize = parseInt($(this).val());
+
+        // Update the card object
+        cards[index].individualLogoSize = newSize;
+
+        // Update UI
+        const $cardItem = $(this).closest('.card-item');
+        $cardItem.find('.logo-size-display').text(`${newSize}%`);
+        $cardItem.find('.loyalty-card img').css({
+            'max-width': `${newSize}%`,
+            'max-height': `${newSize}%`
+        });
+    });
+
     // Download single card button
     $('.download-card').on('click', function () {
         const index = $(this).data('index');
@@ -181,35 +246,11 @@ function attachControlListeners() {
     // Remove card button
     $('.remove-card').on('click', function () {
         const index = $(this).data('index');
-        cards.splice(index, 1);
-        renderCards();
+        if (confirm('Are you sure you want to remove this card?')) {
+            cards.splice(index, 1);
+            renderCards();
+        }
     });
-}
-
-// Function to calculate and draw the logo on canvas to match preview
-function drawLogoOnCanvas(ctx, logoImg, cardWidth, cardHeight, logoSize) {
-    // Calculate dimensions to maintain aspect ratio with margins
-    const margin = cardWidth * (100 - logoSize) / 200; // Calculate margin based on logo size
-    const maxWidth = cardWidth - (margin * 2);
-    const maxHeight = cardHeight - (margin * 2);
-
-    let logoWidth = logoImg.width;
-    let logoHeight = logoImg.height;
-
-    // Scale down if the logo is too large
-    if (logoWidth > maxWidth || logoHeight > maxHeight) {
-        const widthRatio = maxWidth / logoWidth;
-        const heightRatio = maxHeight / logoHeight;
-        const scaleRatio = Math.min(widthRatio, heightRatio);
-
-        logoWidth *= scaleRatio;
-        logoHeight *= scaleRatio;
-    }
-
-    // Draw the logo centered on the card
-    const x = (cardWidth - logoWidth) / 2;
-    const y = (cardHeight - logoHeight) / 2;
-    ctx.drawImage(logoImg, x, y, logoWidth, logoHeight);
 }
 
 // Function to process and draw the logo on canvas, removing transparent borders
@@ -232,6 +273,7 @@ function processAndDrawLogo(ctx, logoImg, cardWidth, cardHeight, logoSize) {
     let minY = tempCanvas.height;
     let maxX = 0;
     let maxY = 0;
+    let hasTransparency = false;
 
     // Scan the image data to find non-transparent pixels
     for (let y = 0; y < tempCanvas.height; y++) {
@@ -243,11 +285,14 @@ function processAndDrawLogo(ctx, logoImg, cardWidth, cardHeight, logoSize) {
                 maxX = Math.max(maxX, x);
                 maxY = Math.max(maxY, y);
             }
+            if (alpha < 255) {
+                hasTransparency = true;
+            }
         }
     }
 
-    // Check if we found any non-transparent pixels
-    if (minX <= maxX && minY <= maxY) {
+    // Check if we found any non-transparent pixels and if there's transparency
+    if (hasTransparency && minX <= maxX && minY <= maxY) {
         // Calculate the trimmed dimensions
         const trimmedWidth = maxX - minX + 1;
         const trimmedHeight = maxY - minY + 1;
@@ -289,7 +334,28 @@ function processAndDrawLogo(ctx, logoImg, cardWidth, cardHeight, logoSize) {
         const y = (cardHeight - logoHeight) / 2;
         ctx.drawImage(trimmedCanvas, x, y, logoWidth, logoHeight);
     } else {
-        // Fallback to original drawing if no non-transparent pixels found
-        drawLogoOnCanvas(ctx, logoImg, cardWidth, cardHeight, logoSize);
+        // No transparency or no visible content - use original image
+        // Calculate dimensions to maintain aspect ratio with margins
+        const margin = cardWidth * (100 - logoSize) / 200;
+        const maxWidth = cardWidth - (margin * 2);
+        const maxHeight = cardHeight - (margin * 2);
+
+        let logoWidth = logoImg.width;
+        let logoHeight = logoImg.height;
+
+        // Scale down if the logo is too large
+        if (logoWidth > maxWidth || logoHeight > maxHeight) {
+            const widthRatio = maxWidth / logoWidth;
+            const heightRatio = maxHeight / logoHeight;
+            const scaleRatio = Math.min(widthRatio, heightRatio);
+
+            logoWidth *= scaleRatio;
+            logoHeight *= scaleRatio;
+        }
+
+        // Draw the logo centered on the card
+        const x = (cardWidth - logoWidth) / 2;
+        const y = (cardHeight - logoHeight) / 2;
+        ctx.drawImage(logoImg, x, y, logoWidth, logoHeight);
     }
 }

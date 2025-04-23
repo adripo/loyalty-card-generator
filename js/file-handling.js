@@ -29,110 +29,65 @@ async function handleFiles(files) {
     }
 }
 
-// Function to download all cards as zip
-function downloadAllCards() {
-    if (cards.length === 0) {
-        alert('No cards to download.');
-        return;
-    }
+// Core function for processing card downloads - used by both single and batch download
+async function processCardForDownload(card, index, prefix) {
+    return new Promise((resolve, reject) => {
+        try {
+            // Create a canvas for the card
+            const canvas = document.createElement('canvas');
+            canvas.width = cardWidth;
+            canvas.height = cardHeight;
+            const ctx = canvas.getContext('2d');
 
-    // Show loading indicator
-    const $downloadBtn = $('#download-all');
-    const originalText = $downloadBtn.html();
-    $downloadBtn.html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Generating...');
-    $downloadBtn.prop('disabled', true);
+            // Draw background
+            ctx.fillStyle = card.backgroundColor;
+            ctx.fillRect(0, 0, cardWidth, cardHeight);
 
-    const zip = new JSZip();
-    const promises = [];
-    const prefix = $('#filename-prefix').val() || 'loyalty_';
+            // Load the logo image
+            const logoImg = new Image();
 
-    // Process each card
-    cards.forEach((card, index) => {
-        const cardPromise = new Promise((resolve) => {
-            // Determine if this is an animated format (should not be converted to PNG)
-            const isAnimated = ['image/gif', 'image/apng', 'image/webp'].some(type =>
-                card.logo.startsWith(`data:${type}`));
+            logoImg.onload = function () {
+                // Get individual size or default
+                const sizeToUse = card.individualLogoSize || logoSize;
 
-            if (isAnimated) {
-                // For animated formats, use original image data
-                fetch(card.logo)
-                    .then(res => res.blob())
-                    .then(blob => {
-                        const basename = card.filename || `card_${index + 1}`;
-                        zip.file(basename, blob);
-                        resolve();
-                    })
-                    .catch(err => {
-                        console.error('Error fetching animated image:', err);
-                        resolve(); // Resolve anyway to continue with other cards
-                    });
-            } else {
-                // For static images, create PNG
-                const canvas = document.createElement('canvas');
-                canvas.width = cardWidth;
-                canvas.height = cardHeight;
-                const ctx = canvas.getContext('2d');
+                // Process and draw the logo - all images will be static PNGs
+                processAndDrawLogo(ctx, logoImg, cardWidth, cardHeight, sizeToUse);
 
-                // Draw background
-                ctx.fillStyle = card.backgroundColor;
-                ctx.fillRect(0, 0, cardWidth, cardHeight);
+                // Convert canvas to blob
+                canvas.toBlob(blob => {
+                    // Generate a filename with prefix
+                    let filename;
+                    if (card.filename) {
+                        // Strip extension and add .png
+                        const basename = card.filename.split('.').slice(0, -1).join('.') || card.filename;
+                        filename = `${prefix}${basename}.png`;
+                    } else {
+                        filename = `${prefix}card_${index + 1}.png`;
+                    }
 
-                // Load the logo image
-                const logoImg = new Image();
-                logoImg.onload = function () {
-                    // Process and draw logo, removing transparent borders
-                    processAndDrawLogo(ctx, logoImg, cardWidth, cardHeight, logoSize);
+                    resolve({ blob, filename });
+                }, 'image/png');
+            };
 
-                    // Convert canvas to blob
-                    canvas.toBlob(blob => {
-                        // Generate a filename with prefix
-                        const basename = card.filename ? card.filename.split('.')[0] + '.png' : `card_${index + 1}.png`;
-                        const filename = `${prefix}${basename}`;
+            logoImg.onerror = function () {
+                console.error('Error loading logo image');
+                // Just create a colored card with no logo
+                canvas.toBlob(blob => {
+                    const filename = `${prefix}card_${index + 1}.png`;
+                    resolve({ blob, filename });
+                }, 'image/png');
+            };
 
-                        // Add to zip
-                        zip.file(filename, blob);
-                        resolve();
-                    }, 'image/png');
-                };
+            logoImg.src = card.logo;
 
-                logoImg.onerror = function () {
-                    console.error('Error loading logo image');
-                    // Still resolve, but with a simple colored card
-                    canvas.toBlob(blob => {
-                        const filename = `${prefix}card_${index + 1}.png`;
-                        zip.file(filename, blob);
-                        resolve();
-                    }, 'image/png');
-                };
-
-                logoImg.src = card.logo;
-            }
-        });
-
-        promises.push(cardPromise);
-    });
-
-    // Wait for all cards to be processed
-    Promise.all(promises).then(() => {
-        // Generate the zip file
-        zip.generateAsync({ type: 'blob' }).then(content => {
-            // Download the zip file
-            saveAs(content, 'loyalty_cards.zip');
-            // Restore button state
-            $downloadBtn.html(originalText);
-            $downloadBtn.prop('disabled', false);
-        }).catch(err => {
-            console.error('Error generating zip:', err);
-            alert('An error occurred while generating the ZIP file.');
-            $downloadBtn.html(originalText);
-            $downloadBtn.prop('disabled', false);
-        });
+        } catch (error) {
+            reject(error);
+        }
     });
 }
 
-
 // Function to download a single card
-function downloadSingleCard(index) {
+async function downloadSingleCard(index) {
     if (index < 0 || index >= cards.length) return;
 
     const card = cards[index];
@@ -144,75 +99,66 @@ function downloadSingleCard(index) {
     $downloadBtn.html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>');
     $downloadBtn.prop('disabled', true);
 
-    // Determine if this is an animated format (should not be converted to PNG)
-    const isAnimated = ['image/gif', 'image/apng', 'image/webp'].some(type =>
-        card.logo.startsWith(`data:${type}`));
+    try {
+        // Process the card
+        const { blob, filename } = await processCardForDownload(card, index, prefix);
 
-    // Create a canvas to draw the card
-    const canvas = document.createElement('canvas');
-    canvas.width = cardWidth;
-    canvas.height = cardHeight;
-    const ctx = canvas.getContext('2d');
-
-    // Draw background
-    ctx.fillStyle = card.backgroundColor;
-    ctx.fillRect(0, 0, cardWidth, cardHeight);
-
-    // Load the logo image
-    const logoImg = new Image();
-    logoImg.onload = function () {
-        // If animated format, use the original image
-        if (isAnimated) {
-            // Create an anchor element for download
-            const link = document.createElement('a');
-            link.href = card.logo;
-            link.download = `${prefix}${card.filename || `card_${index + 1}.gif`}`;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-
-            // Restore button state
-            $downloadBtn.html(originalText);
-            $downloadBtn.prop('disabled', false);
-        } else {
-            // For static images, process and trim transparent borders
-            processAndDrawLogo(ctx, logoImg, cardWidth, cardHeight, logoSize);
-
-            // Convert canvas to blob
-            canvas.toBlob(blob => {
-                // Generate a filename with prefix
-                const basename = card.filename || `card_${index + 1}`;
-                let filename = `${prefix}${basename}`;
-
-                // Ensure it has .png extension for static images
-                if (!filename.toLowerCase().endsWith('.png')) {
-                    filename = filename.split('.')[0] + '.png';
-                }
-
-                // Create download link
-                const link = document.createElement('a');
-                link.href = URL.createObjectURL(blob);
-                link.download = filename;
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-                URL.revokeObjectURL(link.href);
-
-                // Restore button state
-                $downloadBtn.html(originalText);
-                $downloadBtn.prop('disabled', false);
-            }, 'image/png');
-        }
-    };
-
-    logoImg.onerror = function () {
-        console.error('Error loading logo image');
+        // Create download link
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = filename;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(link.href);
+    } catch (error) {
+        console.error('Error downloading card:', error);
+        alert('Error downloading card: ' + error.message);
+    } finally {
+        // Restore button state
         $downloadBtn.html(originalText);
         $downloadBtn.prop('disabled', false);
-        alert('Error loading image for download');
-    };
+    }
+}
 
-    logoImg.src = card.logo;
+// Function to download all cards as zip
+async function downloadAllCards() {
+    if (cards.length === 0) {
+        alert('No cards to download.');
+        return;
+    }
+
+    // Show loading indicator
+    const $downloadBtn = $('#download-all');
+    const originalText = $downloadBtn.html();
+    $downloadBtn.html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Generating...');
+    $downloadBtn.prop('disabled', true);
+
+    try {
+        const zip = new JSZip();
+        const prefix = $('#filename-prefix').val() || 'loyalty_';
+
+        // Process all cards in parallel
+        const results = await Promise.all(
+            cards.map((card, index) => processCardForDownload(card, index, prefix))
+        );
+
+        // Add each processed card to the zip
+        results.forEach(({ blob, filename }) => {
+            zip.file(filename, blob);
+        });
+
+        // Generate and download the zip file
+        const zipBlob = await zip.generateAsync({ type: 'blob' });
+        saveAs(zipBlob, 'loyalty_cards.zip');
+    } catch (error) {
+        console.error('Error generating ZIP:', error);
+        alert('An error occurred while generating the ZIP file.');
+    } finally {
+        // Restore button state
+        $downloadBtn.html(originalText);
+        $downloadBtn.prop('disabled', false);
+    }
 }
 
 // Setup drag and drop functionality

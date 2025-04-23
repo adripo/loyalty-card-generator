@@ -5,12 +5,21 @@
 // Theme handling
 function setTheme(theme) {
     localStorage.setItem('preferredTheme', theme);
+
+    // Add transition class to body before changing theme
+    document.body.classList.add('theme-transition');
+
     if (theme === 'auto') {
         const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
         document.documentElement.setAttribute('data-bs-theme', systemTheme);
     } else {
         document.documentElement.setAttribute('data-bs-theme', theme);
     }
+
+    // Remove transition class after animation completes
+    setTimeout(() => {
+        document.body.classList.remove('theme-transition');
+    }, 300);
 }
 
 function initTheme() {
