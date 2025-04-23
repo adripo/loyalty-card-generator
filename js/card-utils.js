@@ -107,8 +107,12 @@ function renderCards() {
         // Set up warning for scaled images
         const warningElement = card.needsScaling ?
             `<div class="image-warning">
-                <i class="bi bi-exclamation-triangle-fill"></i>
-                <div class="tooltip-content">Low resolution image (original: ${card.width}×${card.height}px)</div>
+                <div class="image-warning-icon">
+                    <i class="bi bi-exclamation-fill"></i>
+                </div>
+                <div class="tooltip-content">
+                    Low resolution image (original: ${card.width}×${card.height}px)
+                </div>
             </div>` : '';
 
         const cardElement = $(`
