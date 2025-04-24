@@ -1,8 +1,3 @@
-/**
- * Color utilities for the loyalty card generator
- */
-
-// Function to convert HSL color to HEX
 function hslToHex(h, s, l) {
     l /= 100;
     const a = s * Math.min(l, 1 - l) / 100;
@@ -14,50 +9,60 @@ function hslToHex(h, s, l) {
     return `#${f(0)}${f(8)}${f(4)}`;
 }
 
-// Function to generate pastel color in hex
+
 function generatePastelColor() {
     const hue = Math.floor(Math.random() * 360);
-    const saturation = 70; // Fixed for pastel
-    const lightness = 85; // Fixed for pastel
+    const saturation = 70; 
+    const lightness = 85; 
     return hslToHex(hue, saturation, lightness);
 }
 
-// Function to apply color or random colors to all cards
+
 function applyColorToAll(action, color) {
     if (cards.length === 0) return;
-
-    if (action === 'custom') {
-        // Create a color picker input for the custom color
-        const inputId = 'global-color-picker';
-        let input = document.getElementById(inputId);
-
-        if (!input) {
-            input = document.createElement('input');
-            input.type = 'color';
-            input.id = inputId;
-            input.style.position = 'absolute';
-            input.style.visibility = 'hidden';
-            document.body.appendChild(input);
-
-            input.addEventListener('change', function () {
-                cards.forEach(card => {
-                    card.backgroundColor = this.value;
-                });
-                renderCards();
-            });
-        }
-
-        input.click();
-    } else {
+    
+    if (action === 'random') {
         cards.forEach(card => {
-            if (action === 'random') {
-                card.backgroundColor = generatePastelColor();
-            } else {
-                card.backgroundColor = color;
-            }
+            card.backgroundColor = generatePastelColor();
         });
-
-        // Re-render to update UI
+        renderCards();
+    } else if (action === 'color') {
+        cards.forEach(card => {
+            card.backgroundColor = color;
+        });
         renderCards();
     }
 }
+
+
+function getDarkerShade(hexColor, percent = 15) {
+    
+    let r = parseInt(hexColor.substring(1, 3), 16);
+    let g = parseInt(hexColor.substring(3, 5), 16);
+    let b = parseInt(hexColor.substring(5, 7), 16);
+
+    
+    r = Math.max(0, Math.floor(r * (100 - percent) / 100));
+    g = Math.max(0, Math.floor(g * (100 - percent) / 100));
+    b = Math.max(0, Math.floor(b * (100 - percent) / 100));
+
+    
+    return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
+}
+
+
+function getLighterShade(hexColor, percent = 15) {
+    
+    let r = parseInt(hexColor.substring(1, 3), 16);
+    let g = parseInt(hexColor.substring(3, 5), 16);
+    let b = parseInt(hexColor.substring(5, 7), 16);
+
+    
+    r = Math.min(255, Math.floor(r + (255 - r) * percent / 100));
+    g = Math.min(255, Math.floor(g + (255 - g) * percent / 100));
+    b = Math.min(255, Math.floor(b + (255 - b) * percent / 100));
+
+    
+    return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
+}
+
