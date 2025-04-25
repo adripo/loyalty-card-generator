@@ -1,33 +1,130 @@
+/* Root variables and theme transitions */
 :root {
     --card-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    --primary-color: #0d6efd;
+    --secondary-color: #6c757d;
+    --success-color: #198754;
+    --danger-color: #dc3545;
+    --warning-color: #ffc107;
+    --info-color: #0dcaf0;
+    --light-bg: #f8f9fa;
+    --dark-bg: #212529;
+    --border-radius: 0.375rem;
+    --transition-speed: 0.3s;
+    
+    /* Card dimensions (mm) */
+    --card-width-mm: 85.60;
+    --card-height-mm: 53.98;
 }
 
 [data-bs-theme="dark"] {
     --card-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
 }
 
-#drop-area {
-    min-height: 150px;
+/* Theme transition animation */
+html,
+body {
+    transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease;
+}
+
+.card,
+.btn,
+.form-control,
+.dropdown-menu,
+.loyalty-card,
+.color-preset,
+input,
+select,
+textarea {
+    transition: background-color var(--transition-speed) ease, border-color var(--transition-speed) ease,
+        color var(--transition-speed) ease, box-shadow var(--transition-speed) ease;
+}
+
+/* Full page drop zone - Connected to Upload Logos section */
+#full-page-drop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
     height: 100%;
-    border: 2px dashed #ccc;
-    border-radius: 8px;
-    transition: background-color 0.3s;
+    background-color: rgba(var(--bs-primary-rgb), 0.8);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.drop-indicator {
     display: flex;
     flex-direction: column;
-    justify-content: center;
     align-items: center;
+    justify-content: center;
+    padding: 3rem;
+    background-color: rgba(255, 255, 255, 0.9);
+    border-radius: 1rem;
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.2);
+    position: relative;
+    animation: dropPulse 2s infinite;
+}
+
+/* Badge connecting to Upload Logos section */
+.upload-logo-badge {
+    position: absolute;
+    top: -12px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: var(--primary-color);
+    color: white;
+    padding: 0.25rem 1rem;
+    border-radius: 1rem;
+    font-weight: bold;
+    font-size: 0.85rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+@keyframes dropPulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+.drop-indicator i {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    color: var(--primary-color);
+}
+
+.drop-indicator span {
+    font-size: 1.5rem;
+    font-weight: 500;
+}
+
+/* Drop area styles */
+#drop-area {
+    border: 2px dashed var(--bs-border-color);
+    border-radius: var(--border-radius);
+    transition: background-color var(--transition-speed) ease, border-color var(--transition-speed) ease;
+    padding: 2rem;
+    text-align: center;
 }
 
 #drop-area.highlight {
-    background-color: rgba(33, 150, 243, 0.2);
-    border-color: #2196F3;
+    background-color: rgba(var(--bs-primary-rgb), 0.2);
+    border-color: var(--bs-primary);
 }
 
+/* File type icons */
 .file-types {
     display: flex;
-    gap: 10px;
-    margin-top: 15px;
+    flex-wrap: wrap;
     justify-content: center;
+    gap: 15px;
 }
 
 .file-type-icon {
@@ -41,26 +138,87 @@
 .file-type-icon i {
     font-size: 1.5rem;
     margin-bottom: 5px;
+    color: var(--bs-primary);
 }
 
-.card-item {
-    margin-bottom: 30px;
+/* Fix for WEBP icon - make it consistent with other icons */
+.file-type-icon i.bi-filetype-webp {
+    display: block;
+    font-size: 1.5rem;
+    margin-bottom: 5px;
+    color: var(--bs-primary);
+}
+
+/* More option style with dots */
+.file-type-icon.more {
     position: relative;
-    border: 1px solid var(--bs-border-color);
-    border-radius: 10px;
-    padding: 15px;
-    background-color: var(--bs-card-bg);
+    cursor: help;
 }
 
+.file-type-icon.more .tooltip-content {
+    visibility: hidden;
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    margin-bottom: 5px;
+    background: rgba(33, 37, 41, 0.95);
+    color: #fff;
+    padding: 0.5rem;
+    border-radius: var(--border-radius-sm);
+    font-size: 0.75rem;
+    width: max-content;
+    max-width: 250px;
+    opacity: 0;
+    transition: opacity var(--transition-speed);
+    z-index: 1070;
+    white-space: nowrap;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    text-wrap: auto;
+}
+
+.file-type-icon.more:hover .tooltip-content {
+    visibility: visible;
+    opacity: 1;
+}
+
+.file-types-container {
+    margin-top: 15px;
+    position: relative;
+    flex-wrap: wrap;
+    gap: 15px;
+  }
+  
+.file-note {
+    font-size: 0.8rem;
+    padding: 0.25rem 0.5rem;
+    border-left: 1px solid var(--bs-border-color);
+    max-width: 150px;
+    line-height: 1.2;
+}
+
+@media (max-width: 576px) {
+    .file-types-container {
+        flex-direction: column;
+    }
+
+    .file-note {
+        border-left: none;
+        border-top: 1px solid var(--bs-border-color);
+        padding-top: 0.5rem;
+        margin-top: 0.5rem;
+        max-width: none;
+        text-align: center;
+    }
+}
+
+/* Card styling */
 .loyalty-card {
-    position: relative;
     width: 100%;
-    max-width: 512px;
-    border-radius: 8px;
+    border-radius: var(--border-radius);
     overflow: hidden;
     box-shadow: var(--card-shadow);
-    margin-bottom: 1rem;
-    transition: all 0.3s ease;
+    transition: all var(--transition-speed) ease;
 }
 
 .loyalty-card-inner {
@@ -68,123 +226,58 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 20px;
     position: relative;
+    padding: 0; /* Ensure no padding for 100% logo size */
 }
 
-.loyalty-card img {
-    max-width: 90%;
-    max-height: 90%;
-    object-fit: contain;
-    z-index: 10;
-}
-
-.card-controls {
-    display: flex;
-    gap: 10px;
-    margin-top: 10px;
-    flex-wrap: wrap;
-    align-items: center;
-    padding: 10px;
-    border-top: 1px solid var(--bs-border-color);
-}
-
-.card-header {
-    font-weight: 500;
-    margin-bottom: 10px;
-    color: var(--bs-primary);
-}
-
-.color-picker {
-    width: 40px;
-    height: 40px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-}
-
-.image-warning {
-    position: absolute;
-    bottom: 10px;
-    right: 10px;
-    z-index: 20;
-}
-
-.image-warning .bi {
-    font-size: 1.2rem;
-    color: #dc3545;
-    cursor: help;
-    background-color: rgba(255, 255, 255, 0.7);
-    border-radius: 50%;
-    padding: 3px;
-}
-
-.image-warning .tooltip-content {
-    visibility: hidden;
-    background-color: rgba(0, 0, 0, 0.8);
-    color: #fff;
-    text-align: center;
-    border-radius: 6px;
-    padding: 5px 10px;
-    position: absolute;
-    z-index: 21;
-    bottom: 125%;
-    left: 50%;
-    transform: translateX(-50%);
-    opacity: 0;
-    transition: opacity 0.3s;
-    width: max-content;
-    max-width: 200px;
-    font-size: 12px;
-}
-
-.image-warning:hover .tooltip-content {
-    visibility: visible;
-    opacity: 1;
-}
-
-.theme-switch {
-    margin-left: auto;
-}
-
-.counter-badge {
-    background-color: rgba(var(--bs-primary-rgb), .8);
-    font-size: 0.75rem;
-    position: relative;
-    top: -2px;
-}
-
-#cards-container {
-    min-height: 100px;
-}
-
-.empty-state {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 200px;
+/* Color preset styles */
+.color-presets-container {
     width: 100%;
-    color: var(--bs-secondary-color);
-    border: 1px dashed var(--bs-border-color);
-    border-radius: 8px;
+}
+
+.color-presets-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
 }
 
 .color-preset {
     width: 30px;
     height: 30px;
     border-radius: 50%;
-    border: 1px solid rgba(0, 0, 0, 0.1);
     cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border: 1px solid rgba(0, 0, 0, 0.1);
 }
 
+[data-bs-theme="dark"] .color-preset {
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.color-preset:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 0 3px rgba(var(--bs-primary-rgb), 0.3);
+}
+
+/* Special color presets */
+.special-presets {
+    margin-top: 15px;
+    border-top: 1px solid var(--bs-border-color);
+    padding-top: 15px;
+}
+
+.special-presets .color-preset {
+    width: 40px;
+    height: 40px;
+    border: 2px solid var(--bs-border-color);
+}
+
+/* Custom color preset */
 .custom-color-preset {
     background: conic-gradient(red, orange, yellow, green, blue, indigo, violet, red);
+    background-size: 110% 110%;
+    background-position: center;
     position: relative;
-    overflow: hidden;
-    display: flex;
-    align-items: center;
-    justify-content: center;
 }
 
 .custom-color-preset::after {
@@ -192,25 +285,340 @@
     color: white;
     text-shadow: 0 0 2px #000;
     font-weight: bold;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 1.2rem;
 }
 
-[data-bs-theme="dark"] .color-preset {
-    border-color: rgba(255, 255, 255, 0.2);
-}
-
-.color-preset:hover {
-    transform: scale(1.1);
-}
-
-.color-preset-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-}
-
+/* Random color preset */
 .random-preset {
+    background: linear-gradient(135deg, #ff9a9e, #fad0c4, #fad0c4, #a1c4fd);
+    position: relative;
+}
+
+.random-preset i {
+    color: white;
+    text-shadow: 0 0 2px #000;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 1.2rem;
+}
+
+/* Enhanced slider UI */
+.slider-wrapper {
+    position: relative;
+    margin: 1.5rem 0;
+}
+
+.form-range {
+    height: 8px;
+    -webkit-appearance: none;
+    background: #e9ecef;
+    border-radius: 4px;
+    margin: 15px 0 30px;
+    position: relative;
+    z-index: 10; /* Ensure slider is above ticks */
+}
+
+.form-range::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--bs-primary);
+    cursor: pointer;
+    border: 2px solid white;
+    box-shadow: 0 0 2px rgba(0, 0, 0, 0.4);
+    position: relative;
+    z-index: 20; /* Ensure thumb is above ticks */
+}
+
+.form-range::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--bs-primary);
+    cursor: pointer;
+    border: 2px solid white;
+    box-shadow: 0 0 2px rgba(0, 0, 0, 0.4);
+    position: relative;
+    z-index: 20; /* Ensure thumb is above ticks */
+}
+
+.form-range::-webkit-slider-runnable-track {
+    height: 8px;
+    background: #e9ecef;
+    border-radius: 4px;
+    z-index: 0;
+}
+
+.form-range::-moz-range-track {
+    height: 8px;
+    background: #e9ecef;
+    border-radius: 4px;
+}
+
+.slider-ticks {
+    display: flex;
+    justify-content: space-between;
+    position: absolute;
+    width: 100%;
+    top: 19px; /* Position at center of the slider track */
+    pointer-events: none;
+    z-index: 5; /* Below the slider */
+}
+
+.slider-tick {
+    width: 16px;
+    height: 16px;
+    background-color: white;
+    border: 1px solid #ced4da;
+    border-radius: 50%;
+    position: relative;
+    transform: translateY(-50%);
+    cursor: pointer;
+    pointer-events: auto;
+    transition: all 0.2s ease;
+}
+
+.slider-tick:hover {
+    background-color: var(--bs-primary);
+    border-color: var(--bs-primary);
+}
+
+/* Warning tooltip */
+.image-warning {
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    z-index: 20;
+}
+
+.image-warning-icon {
+    font-size: 0.75rem;
+    color: #fff;
+    background-color: var(--bs-danger);
+    border-radius: 50%;
+    width: 18px;
+    height: 18px;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(135deg, #ff9a9e, #fad0c4, #fad0c4, #a1c4fd);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.image-warning .tooltip-content {
+    visibility: hidden;
+    position: absolute;
+    bottom: 100%;
+    right: 0;
+    margin-bottom: 5px;
+    background: rgba(33, 37, 41, 0.95);
+    color: #fff;
+    padding: 0.5rem;
+    border-radius: var(--border-radius);
+    font-size: 0.75rem;
+    width: max-content;
+    max-width: 200px;
+    opacity: 0;
+    transition: opacity var(--transition-speed);
+    z-index: 1070;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.image-warning:hover .tooltip-content {
+    visibility: visible;
+    opacity: 1;
+}
+
+/* Empty state for no cards */
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 200px;
+    color: var(--bs-secondary-color);
+    border: 1px dashed var(--bs-border-color);
+    border-radius: var(--border-radius);
+}
+
+/* Card controls */
+.card-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    align-items: center;
+    padding: 0.75rem;
+    border-top: 1px solid var(--bs-border-color);
+}
+
+.color-control-group {
+    display: flex;
+    align-items: center;
+    background-color: var(--bs-tertiary-bg);
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    border: 1px solid var(--bs-border-color);
+}
+
+.color-picker {
+    height: 38px;
+    width: 38px;
+    padding: 0;
+    border: none;
+    cursor: pointer;
+    margin: 0;
+    background-color: transparent;
+}
+
+.random-color {
+    border: none;
+    border-left: 1px solid var(--bs-border-color);
+    border-radius: 0;
+    height: 38px;
+    padding: 0 0.75rem;
+    color: var(--bs-body-color);
+    background-color: var(--bs-tertiary-bg);
+}
+
+.random-color i {
+    color: var(--bs-body-color);
+}
+
+.action-buttons {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    margin-left: auto;
+}
+
+.card-action-btn {
+    padding: 0.375rem 0.75rem;
+}
+
+/* Color picker popover */
+.color-picker-container {
+    position: absolute;
+    z-index: 1050;
+    filter: drop-shadow(0 5px 15px rgba(0, 0, 0, 0.2));
+}
+
+.color-picker-popover {
+    background-color: var(--bs-body-bg);
+    border-radius: var(--border-radius);
+    border: 1px solid var(--bs-border-color);
+    overflow: hidden;
+    width: 220px;
+}
+
+.popover-header {
+    background-color: var(--bs-primary);
+    color: white;
+    padding: 0.5rem 1rem;
+    margin: 0;
+    font-weight: 500;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.popover-body {
+    padding: 1rem;
+}
+
+.color-picker-input {
+    width: 100%;
+    height: 40px;
+    padding: 0;
+    border: 1px solid var(--bs-border-color);
+    border-radius: var(--border-radius-sm);
+    cursor: pointer;
+}
+
+/* Slim logo size control */
+.logo-size-control {
+    padding: 0.35rem 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: linear-gradient(to bottom, var(--bs-tertiary-bg), var(--bs-body-bg));
+    border-top: 1px solid var(--bs-border-color);
+    border-radius: 0 0 var(--border-radius) var(--border-radius);
+  }
+  
+  .slim-size-display {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.8rem;
+  }
+  
+  .size-icon {
+    color: var(--bs-secondary-color);
+    font-size: 0.65rem;
+  }
+  
+  .size-value {
+    color: var(--bs-primary);
+    font-weight: 500;
+    min-width: 24px;
+  }
+  
+  .thin-slider {
+    flex-grow: 1;
+    margin: 0;
+    height: 3px;
+    background-color: var(--bs-border-color);
+  }
+  
+  .thin-slider::-webkit-slider-thumb {
+    width: 12px;
+    height: 12px;
+    box-shadow: none;
+    border: none;
+    margin-top: -.1rem;
+  }
+  
+  .thin-slider::-moz-range-thumb {
+    width: 12px;
+    height: 12px;
+    box-shadow: none;
+    border: none;
+    margin-top: -.1rem;
+  }
+  
+  .reset-size {
+    padding: 0;
+    border: none;
+    background: transparent;
+    color: var(--bs-secondary-color);
+    width: 16px;
+    height: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.7;
+    transition: all 0.2s ease;
+  }
+  
+  .reset-size:hover {
+    opacity: 1;
+    color: var(--bs-primary);
+  }  
+
+@media (max-width: 991.98px) {
+    #full-page-drop .drop-indicator {
+        padding: 2rem;
+    }
+    
+    #full-page-drop .drop-indicator i {
+        font-size: 2rem;
+    }
+    
+    #full-page-drop .drop-indicator span {
+        font-size: 1.2rem;
+    }
 }

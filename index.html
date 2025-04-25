@@ -1,182 +1,233 @@
 <!DOCTYPE html>
-<html lang="en" data-bs-theme="auto">
-
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Loyalty Card Generator</title>
-
-    <!-- Bootstrap CSS -->
+    <!-- Bootstrap CSS and Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Bootstrap Icons -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="css/styles.css">
+    <link href="css/styles.css" rel="stylesheet">
+    <!-- Preload theme script to prevent flash -->
+    <script src="js/theme.js"></script>
 </head>
-
 <body>
-    <div class="container mt-5 mb-5">
-        <div class="d-flex align-items-center justify-content-between mb-4">
-            <h1>Loyalty Card Generator</h1>
-            <div class="d-flex align-items-center">
-                <div class="theme-switch">
-                    <div class="btn-group" role="group">
-                        <input type="radio" class="btn-check" name="theme" id="theme-light" value="light">
-                        <label class="btn btn-outline-primary" for="theme-light"><i class="bi bi-sun"></i></label>
-
-                        <input type="radio" class="btn-check" name="theme" id="theme-dark" value="dark">
-                        <label class="btn btn-outline-primary" for="theme-dark"><i class="bi bi-moon"></i></label>
-
-                        <input type="radio" class="btn-check" name="theme" id="theme-auto" value="auto" checked>
-                        <label class="btn btn-outline-primary" for="theme-auto"><i
-                                class="bi bi-circle-half"></i></label>
-                    </div>
-                </div>
-            </div>
+    <!-- Full page drop indicator -->
+    <div id="full-page-drop" class="d-none">
+        <div class="drop-indicator">
+            <div class="upload-logo-badge">Upload Logos</div>
+            <i class="bi bi-cloud-arrow-down"></i>
+            <span>Drop your image files here</span>
         </div>
-
-        <div class="row mb-4">
-            <div class="col-md-6">
-                <div class="card h-100">
-                    <div class="card-body d-flex flex-column">
-                        <h5 class="card-title">Upload Logos</h5>
-                        <div id="drop-area" class="p-4 border rounded text-center flex-grow-1">
-                            <p>Drag & drop logo images here or</p>
-                            <input type="file" id="file-input" multiple accept="image/*" class="d-none">
-                            <button id="file-button" class="btn btn-primary">Select Files</button>
-
-                            <div class="file-types mt-3">
-                                <div class="file-type-icon">
-                                    <i class="bi bi-filetype-png"></i>
-                                    <span>PNG</span>
-                                </div>
-                                <div class="file-type-icon">
-                                    <i class="bi bi-filetype-svg"></i>
-                                    <span>SVG</span>
-                                </div>
-                                <div class="file-type-icon">
-                                    <i class="bi bi-file-earmark-image"></i>
-                                    <span>WEBP</span>
-                                </div>
-                                <div class="file-type-icon">
-                                    <i class="bi bi-filetype-jpg"></i>
-                                    <span>JPG</span>
-                                </div>
-                                <div class="file-type-icon">
-                                    <i class="bi bi-filetype-gif"></i>
-                                    <span>GIF</span>
-                                </div>
-                            </div>
-                            <div class="mt-2 small text-muted">
-                                Animated formats (GIF, APNG, WEBP) will preserve animation
-                            </div>
-                        </div>
+    </div>
+    
+    <div class="container py-4">
+        <header class="pb-3 mb-4 border-bottom">
+            <div class="d-flex justify-content-between align-items-center">
+                <h1 class="fw-bold">Loyalty Card Generator</h1>
+                <div class="theme-switcher">
+                    <div class="btn-group" role="group" aria-label="Theme switcher">
+                        <input type="radio" class="btn-check" name="theme" id="theme-light" value="light" autocomplete="off">
+                        <label class="btn btn-outline-primary btn-sm" for="theme-light">
+                            <i class="bi bi-sun-fill"></i>
+                        </label>
+                        
+                        <input type="radio" class="btn-check" name="theme" id="theme-dark" value="dark" autocomplete="off">
+                        <label class="btn btn-outline-primary btn-sm" for="theme-dark">
+                            <i class="bi bi-moon-fill"></i>
+                        </label>
+                        
+                        <input type="radio" class="btn-check" name="theme" id="theme-auto" value="auto" autocomplete="off">
+                        <label class="btn btn-outline-primary btn-sm" for="theme-auto">
+                            <i class="bi bi-circle-half"></i>
+                        </label>
                     </div>
                 </div>
             </div>
+        </header>
 
-            <div class="col-md-6">
-                <div class="card h-100">
-                    <div class="card-body">
-                        <h5 class="card-title">Card Settings</h5>
-
-                        <!-- Card Dimensions -->
-                        <div class="mb-3">
-                            <label for="card-width" class="form-label">Card Width (px)</label>
-                            <div class="input-group">
-                                <input type="number" class="form-control" id="card-width" value="512">
-                                <span class="input-group-text">px</span>
-                            </div>
-                            <div class="form-text">Output: <span id="dimensions-display">512 × 323 px</span> (credit
-                                card ratio)</div>
+        <div class="row g-4">
+            <!-- Left Column: Controls -->
+            <div class="col-lg-3">
+                <div class="p-4 bg-body-tertiary rounded-3 mb-4">
+                    <h2 class="h5 mb-3">Card Settings</h2>
+                    
+                    <div class="mb-3">
+                        <label for="card-width" class="form-label mb-1">Card Width (px)</label>
+                        <div class="input-group">
+                            <input type="number" class="form-control" id="card-width" value="512" min="100" max="2000" step="1">
+                            <span class="input-group-text">px</span>
                         </div>
-
-                        <!-- Filename Prefix -->
-                        <div class="mb-3">
-                            <label for="filename-prefix" class="form-label">Filename Prefix</label>
-                            <input type="text" class="form-control" id="filename-prefix" value="loyalty_">
-                            <div class="form-text">Added before each filename when downloading</div>
+                        <div class="form-text d-flex justify-content-between">
+                            <span>Output:</span>
+                            <span id="dimensions-display">512 × 323 px</span>
                         </div>
-
-                        <!-- Logo Positioning -->
-                        <div class="mb-3">
-                            <label class="form-label">Logo Size</label>
-                            <div class="d-flex align-items-center">
-                                <input type="range" class="form-range" id="logo-size" min="50" max="100" value="90">
-                                <span class="ms-3" id="logo-size-display">90%</span>
-                            </div>
-                            <div class="form-text">Controls the maximum size of the logo relative to the card</div>
+                        <div class="form-text text-end">(85.60 × 53.98 mm)</div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="filename-prefix" class="form-label mb-1">Filename Prefix</label>
+                        <input type="text" class="form-control" id="filename-prefix" placeholder="loyalty-card">
+                        <div class="form-text">Added before each filename when downloading</div>
+                    </div>
+                </div>
+                
+                <div class="p-4 bg-body-tertiary rounded-3 mb-4">
+                    <h2 class="h5 mb-3">Background Color Presets</h2>
+                    <p class="mb-3 small">Click to apply to all cards</p>
+                    
+                    <div class="color-presets-container mb-3">
+                        <!-- Organized by rows -->
+                        <div class="color-presets-row mb-2">
+                            <button class="color-preset" style="background-color: #FFFFFF;" data-color="#FFFFFF" title="White"></button>
+                            <button class="color-preset" style="background-color: #F5F5F5;" data-color="#F5F5F5" title="Light Gray"></button>
+                            <button class="color-preset" style="background-color: #E3F2FD;" data-color="#E3F2FD" title="Light Blue"></button>
+                            <button class="color-preset" style="background-color: #E8F5E9;" data-color="#E8F5E9" title="Light Green"></button>
+                            <button class="color-preset" style="background-color: #FFF3E0;" data-color="#FFF3E0" title="Light Orange"></button>
                         </div>
-
-                        <!-- Color Presets -->
-                        <div class="mb-3">
-                            <label class="form-label">Background Color Presets</label>
-                            <div class="color-preset-container">
-                                <button class="color-preset random-preset" data-action="random"
-                                    title="Random colors for each card"><i class="bi bi-shuffle"></i></button>
-                                <button class="color-preset custom-color-preset" data-action="custom"
-                                    title="Choose custom color"></button>
-                                <button class="color-preset" style="background-color: #ffffff;" data-color="#ffffff"
-                                    title="White"></button>
-                                <button class="color-preset" style="background-color: #f8f9fa;" data-color="#f8f9fa"
-                                    title="Light Gray"></button>
-                                <button class="color-preset" style="background-color: #000000;" data-color="#000000"
-                                    title="Black"></button>
-                                <button class="color-preset" style="background-color: #f8d7da;" data-color="#f8d7da"
-                                    title="Light Red"></button>
-                                <button class="color-preset" style="background-color: #d1e7dd;" data-color="#d1e7dd"
-                                    title="Light Green"></button>
-                                <button class="color-preset" style="background-color: #cfe2ff;" data-color="#cfe2ff"
-                                    title="Light Blue"></button>
-                                <button class="color-preset" style="background-color: #fff3cd;" data-color="#fff3cd"
-                                    title="Light Yellow"></button>
-                                <button class="color-preset" style="background-color: #e2d9f3;" data-color="#e2d9f3"
-                                    title="Light Purple"></button>
-                                <button class="color-preset" style="background-color: #ebf5f5;" data-color="#ebf5f5"
-                                    title="Light Teal"></button>
-                            </div>
-                            <div class="form-text">Click to apply to all cards</div>
+                        
+                        <div class="color-presets-row mb-2">
+                            <button class="color-preset" style="background-color: #F3E5F5;" data-color="#F3E5F5" title="Light Purple"></button>
+                            <button class="color-preset" style="background-color: #FFEBEE;" data-color="#FFEBEE" title="Light Red"></button>
+                            <button class="color-preset" style="background-color: #E1F5FE;" data-color="#E1F5FE" title="Sky Blue"></button>
+                            <button class="color-preset" style="background-color: #F1F8E9;" data-color="#F1F8E9" title="Mint"></button>
+                            <button class="color-preset" style="background-color: #000000;" data-color="#000000" title="Black"></button>
                         </div>
-
-                        <!-- Action Buttons -->
-                        <div class="d-flex gap-2">
-                            <button id="download-all" class="btn btn-success">
-                                <i class="bi bi-download"></i> Download All Cards
-                            </button>
-                            <button id="clear-all" class="btn btn-danger">
-                                <i class="bi bi-trash"></i> Clear All Cards
+                        
+                        <!-- Special options in a separate row -->
+                        <div class="special-presets mt-3 d-flex justify-content-center gap-3">
+                            <button class="color-preset custom-color-preset" data-action="custom" title="Choose Custom Color"></button>
+                            <button class="color-preset random-preset" data-action="random" title="Apply Random Colors">
+                                <i class="bi bi-shuffle"></i>
                             </button>
                         </div>
                     </div>
+                    
+                    <!-- Logo size slider moved after color section -->
+                    <div class="slider-container mt-4">
+                        <div class="slider-header">
+                            <label for="logo-size" class="form-label mb-0">Logo Size</label>
+                            <span class="slider-value" id="logo-size-display">90%</span>
+                        </div>
+                        <div class="slider-wrapper">
+                            <input type="range" class="form-range" id="logo-size" min="50" max="100" value="90" step="1">
+                            <div class="slider-ticks">
+                                <div class="slider-tick" data-value="50"></div>
+                                <div class="slider-tick" data-value="60"></div>
+                                <div class="slider-tick" data-value="70"></div>
+                                <div class="slider-tick" data-value="80"></div>
+                                <div class="slider-tick" data-value="90"></div>
+                                <div class="slider-tick" data-value="100"></div>
+                            </div>
+                        </div>
+                        <div class="form-text">Default logo size relative to the card</div>
+                    </div>
+                    
+                    <div class="d-grid gap-2 mt-4">
+                        <button class="btn btn-primary" id="download-all" disabled>
+                            <i class="bi bi-download me-2"></i>Download All Cards
+                        </button>
+                        <button class="btn btn-outline-danger" id="clear-all" disabled>
+                            <i class="bi bi-trash me-2"></i>Clear All Cards
+                        </button>
+                    </div>
                 </div>
             </div>
-        </div>
-
-        <div class="d-flex align-items-center mb-3">
-            <h4 class="mb-0">Your Cards</h4>
-            <span class="badge counter-badge ms-2" id="card-counter">0</span>
-        </div>
-
-        <div id="cards-container" class="row">
-            <div id="empty-state" class="empty-state">
-                <i class="bi bi-card-image fs-1 mb-3"></i>
-                <p>Upload logos to generate cards</p>
+            
+            <!-- Right Column: Upload and Cards -->
+            <div class="col-lg-9">
+                <!-- Upload section moved to right column -->
+                <div class="p-4 bg-body-tertiary rounded-3 mb-4" id="drop-area">
+                    <h2 class="h5 mb-3">Upload Logos</h2>
+                    <p class="mb-4">Drag &amp; drop logo images here or</p>
+                    
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-primary" id="file-button">
+                            <i class="bi bi-upload me-2"></i>Select Files
+                        </button>
+                        <input type="file" id="file-input" accept="image/*" multiple style="display: none;">
+                    </div>
+                    
+                    <div class="file-types-container d-flex align-items-center justify-content-center">
+                        <div class="file-types">
+                            <div class="file-type-icon">
+                                <i class="bi bi-filetype-png"></i>
+                                <span>PNG</span>
+                            </div>
+                            <div class="file-type-icon">
+                                <i class="bi bi-filetype-svg"></i>
+                                <span>SVG</span>
+                            </div>
+                            <div class="file-type-icon">
+                                <i class="bi bi-filetype-jpg"></i>
+                                <span>JPG</span>
+                            </div>
+                            <div class="file-type-icon">
+                                <i class="bi bi-filetype-gif"></i>
+                                <span>GIF</span>
+                            </div>
+                            <div class="file-type-icon">
+                                <i class="bi bi-file-earmark"></i>
+                                <span>WEBP</span>
+                            </div>
+                            <div class="file-type-icon more">
+                                <i class="bi bi-file-earmark-plus"></i>
+                                <span>More</span>
+                                <div class="tooltip-content">
+                                    Also supports: APNG, AVIF, BMP, ICO and other image formats
+                                </div>
+                            </div>
+                        </div>
+                        <div class="file-note ms-3 small text-secondary">
+                            <i class="bi bi-info-circle-fill me-1"></i>All images will be processed as PNG files
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="p-4 bg-body-tertiary rounded-3 mb-4">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h2 class="h5 mb-0">Your Cards</h2>
+                        <span class="badge text-bg-primary counter-badge" id="card-counter">0</span>
+                    </div>
+                    
+                    <div class="row g-4" id="cards-container">
+                        <div id="empty-state" class="empty-state">
+                            <i class="bi bi-image mb-3" style="font-size: 2rem;"></i>
+                            <p>Upload logos to generate cards</p>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-
-    <!-- Required Libraries -->
+    
+    <!-- Color picker container -->
+    <div id="color-picker-container" class="color-picker-container" style="display:none;">
+        <div class="color-picker-popover">
+            <div class="popover-header d-flex justify-content-between align-items-center">
+                <span>Choose Color</span>
+                <button type="button" class="btn-close btn-close-white color-picker-close" aria-label="Close"></button>
+            </div>
+            <div class="popover-body">
+                <input type="color" class="form-control color-picker-input" value="#ffffff">
+                <div class="d-flex justify-content-between mt-2">
+                    <button class="btn btn-sm btn-outline-secondary color-picker-cancel">Cancel</button>
+                    <button class="btn btn-sm btn-primary color-picker-apply">Apply</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Bootstrap and jQuery JS -->
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.7.1/jszip.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
-
-    <!-- Custom JS -->
+    
+    <!-- Application JS -->
     <script src="js/theme.js"></script>
     <script src="js/color-utils.js"></script>
     <script src="js/card-utils.js"></script>
     <script src="js/file-handling.js"></script>
     <script src="js/app.js"></script>
 </body>
-
 </html>
