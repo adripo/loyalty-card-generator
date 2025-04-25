@@ -124,6 +124,13 @@ $(document).ready(function () {
         }
     });
 
+    // Update slider background based on value
+    $(document).on('input', '.logo-size-slider', function() {
+        const value = $(this).val();
+        $(this).css('--value', value);
+        $(this).closest('.logo-size-control').find('.size-value').text(`${value}%`);
+    });
+
     // Set up drag and drop
     setupDragAndDrop();
     setupFullPageDragDrop();
@@ -270,6 +277,6 @@ function openColorPicker($trigger, callback) {
             $picker.hide();
             $(document).off('mousedown.colorPicker');
         }
-    });
+    });  
 }
 

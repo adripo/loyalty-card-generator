@@ -163,7 +163,7 @@ function renderCards() {
                     <div class="loyalty-card" style="width: ${cardWidth}px; max-width: 100%;">
                         <div class="loyalty-card-inner" style="background-color: ${card.backgroundColor};">
                             <img src="${card.logo}" alt="Logo" style="width: ${effectiveLogoSize}%; max-height: ${effectiveLogoSize}%; object-fit: contain;">
-                            ${card.needsScaling ? `
+                            ${(!card.isSvg && card.needsScaling) ? `
                                 <div class="image-warning">
                                     <div class="image-warning-icon">!</div>
                                     <div class="tooltip-content">
@@ -178,12 +178,15 @@ function renderCards() {
                             <i class="bi bi-file-image"></i> ${card.filename}
                         </p>
                     </div>
-                    <!-- Logo size control moved above card controls -->
                     <div class="logo-size-control">
-                        <input type="range" class="form-range logo-size-slider" min="50" max="100" value="${effectiveLogoSize}" 
-                            data-card-index="${index}">
-                        <span class="logo-size-value">${effectiveLogoSize}%</span>
-                        <button class="btn btn-sm btn-outline-secondary reset-logo-size" title="Reset to global size" data-card-index="${index}">
+                        <div class="slim-size-display">
+                            <span class="size-icon"><i class="bi bi-arrows-angle-expand"></i></span>
+                            <span class="size-value">${effectiveLogoSize}%</span>
+                        </div>
+                        <input type="range" class="logo-size-slider form-range thin-slider" 
+                                min="50" max="100" value="${effectiveLogoSize}" 
+                                data-card-index="${index}">
+                        <button class="reset-size" title="Reset to global size" data-card-index="${index}">
                             <i class="bi bi-arrow-counterclockwise"></i>
                         </button>
                     </div>
@@ -231,7 +234,7 @@ function renderCards() {
         });
 
         // Reset button for logo size
-        cardElement.find('.reset-logo-size').on('click', function () {
+        cardElement.find('.reset-size').on('click', function () {
             const cardIndex = $(this).data('card-index');
             cards[cardIndex].individualLogoSize = null;
             renderCards();
